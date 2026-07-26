@@ -15,11 +15,17 @@ class Fibonacci {
 public:
     // TODO: 实现构造器
     // Fibonacci()
+    //cache{0, 1}   cache[0] 初始化为0, cache[1] 初始化为 1, 剩余 14 个元素（索引 2~15）全部自动置零
+    Fibonacci():cache{0,1},cached{1}{
+
+    }
 
     // TODO: 实现正确的缓存优化斐波那契计算
     size_t get(int i) {
-        for (; false; ++cached) {
-            cache[cached] = cache[cached - 1] + cache[cached - 2];
+        while(cached<i)
+        {
+            cached++;
+            cache[cached]=cache[cached-1]+cache[cached-2];
         }
         return cache[i];
     }
