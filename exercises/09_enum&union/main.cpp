@@ -34,10 +34,11 @@ ColorEnum convert_by_pun(Color c) {
         ColorEnum e;
         Color c;
     };
-
+    // 存入：给 pun.c 赋值，就是把 c 的值（一个整数值，比如 Color::Red 对应整数 31）写入这块内存。
+    // 读取：接着读取 pun.e，就是把同一块内存里的二进制数据当成 ColorEnum 类型来解释。
     TypePun pun;
     // TODO: 补全类型双关转换
-
+    pun.c=c;
     return pun.e;
 }
 
