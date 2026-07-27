@@ -11,6 +11,10 @@ struct Tensor {
     Tensor(unsigned int const shape_[N]) {
         unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
+        for(size_t i=0;i<N;i++){
+            shape[i]=shape_[i];
+            size=size*shape[i];
+        }
         data = new T[size];
         std::memset(data, 0, size * sizeof(T));
     }
@@ -35,6 +39,10 @@ private:
         for (unsigned int i = 0; i < N; ++i) {
             ASSERT(indices[i] < shape[i], "Invalid index");
             // TODO: 计算 index
+            unsigned int stride=1;
+            for(unsigned int j=i+1;j<N;j++)
+                stride=stride*shape[j];
+            index=index+indices[i]*stride;
         }
         return index;
     }
@@ -44,9 +52,16 @@ private:
 int main(int argc, char **argv) {
     {
         unsigned int shape[]{2, 3, 4, 5};
+        //C++ 语法明确规定：只有模板名称后面才能跟尖括号 < > 作为参数列表
+        //所以一旦看到 Tensor<4, int>，编译器会立刻识别 Tensor 是一个模板
+
+        //template<typename T>
+        //T add(T a, T b) { return a + b; }
+        //add(1, 2);   // 编译器从 1 和 2 的类型推断 T = int，等价于 add<int>(1, 2)
         auto tensor = Tensor<4, int>(shape);
 
         unsigned int i0[]{0, 0, 0, 0};
+        //是在给一个四维张量的指定位置赋值
         tensor[i0] = 1;
         ASSERT(tensor[i0] == 1, "tensor[i0] should be 1");
         ASSERT(tensor.data[0] == 1, "tensor[i0] should be 1");
