@@ -10,6 +10,12 @@ struct Tensor4D {
     Tensor4D(unsigned int const shape_[4], T const *data_) {
         unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
+        for(size_t i=0;i<4;i++){
+            shape[i]=shape_[i];
+            // 先计算出正确的 size
+            size=size*shape[i];
+        }
+        // 再根据正确的 size 分配内存
         data = new T[size];
         std::memcpy(data, data_, size * sizeof(T));
     }
@@ -26,8 +32,35 @@ struct Tensor4D {
     // `others` 长度为 1 但 `this` 长度不为 1 的维度将发生广播计算。
     // 例如，`this` 形状为 `[1, 2, 3, 4]`，`others` 形状为 `[1, 2, 1, 4]`，
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
+
+    //两个张量的维度数必须相同（都是四维）。
+    //对于每个维度，others.shape[i] 要么等于 this.shape[i]，要么等于 1。
+    //如果 others.shape[i] == 1，那么 others 在该维度上只有一个元素，这个元素将被复制到 this 该维度的所有位置。
     Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
+        for(unsigned int i0=0;i0<shape[0];i0++){
+            //如果 others.shape[dim] == 1，
+            //说明 others 在该维度只有1个元素，广播时该维度总是取索引0（即那个唯一的元素）。
+            unsigned int j0=(others.shape[0]==1)?0:i0;
+            for(unsigned int i1=0;i1<shape[1];i1++){
+                unsigned int j1=(others.shape[1]==1)?0:i1;
+                for(unsigned int i2=0;i2<shape[2];i2++){
+                    unsigned int j2=(others.shape[2]==1)?0:i2;
+                    for(unsigned int i3=0;i3<shape[3];i3++){
+                        unsigned int j3=(others.shape[3]==1)?0:i3;
+                        int data_index=i0*(shape[1]*shape[2]*shape[3])
+                                      +i1*(shape[2]*shape[3])
+                                      +i2*shape[3]
+                                      +i3;
+                        int others_index=j0*(others.shape[1]*others.shape[2]*others.shape[3])
+                                        +j1*(others.shape[2]*others.shape[3])
+                                        +j2*others.shape[3]
+                                        +j3;  
+                        data[data_index]=data[data_index]+others.data[others_index];
+                    }
+                }
+            }
+        }
         return *this;
     }
 };
