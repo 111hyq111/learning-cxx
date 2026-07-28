@@ -7,11 +7,18 @@
 template<class k, class v>
 bool key_exists(std::map<k, v> const &map, k const &key) {
     // TODO: 实现函数
+    // map.find(key) 返回一个迭代器。
+    // 如果找到了键为 key 的元素，迭代器指向该元素。
+    // 如果没有找到，迭代器等于 map.end()（即“尾后迭代器”，表示“不存在”）。
+    if(map.find(key)==map.end())
+        return false;
+    return true;
 }
 
 template<class k, class v>
 void set(std::map<k, v> &map, k key, v value) {
     // TODO: 实现函数
+    map[key]=value;
 }
 
 // ---- 不要修改以下代码 ----
